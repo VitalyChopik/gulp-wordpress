@@ -1,14 +1,16 @@
 <?php
-add_action('acf/init', 'my_register_blocks');
+add_action('acf/init', 'register_acf_blocks');
 
-function my_register_blocks() {
+function register_acf_blocks() {
+    // массив блоков
+    $blocks = [
+        'hero' => 'Hero',
+    ];
 
-    // check function exists.
-    if( function_exists('acf_register_block_type') ) {
-        // name block
+    foreach ($blocks as $name => $title) {
         acf_register_block([
-            'name'              => 'name',
-            'title'             => __('Name'),
+            'name'              => $name,
+            'title'             => __($title),
             'category'          => 'formatting',
             'supports' => [
                 'align' => [
@@ -19,16 +21,11 @@ function my_register_blocks() {
             ],
             'align' => 'wide',
             'mode' => 'preview',
-            'enqueue_style'     =>  get_stylesheet_directory_uri() .'/dist/style/style.css',
-            'enqueue_script'    => get_stylesheet_directory_uri() .'/dist/js/script.js', 
+            'render_template' => "/template-parts/block/{$name}.php",
+            'enqueue_style'     =>  get_stylesheet_directory_uri() .'/dist/style/'.$name.'.css',
+            'enqueue_script'    => get_stylesheet_directory_uri() .'/dist/js/'.$name.'.js', 
         ]);
     }
 }
-function my_acf_block_render_callback( $block )
-{
-	$name = str_replace( 'acf/', '', $block['name'] );
 
-	if ( file_exists( get_theme_file_path( "/template-parts/block/block-{$name}.php" ) ) ) {
-		include( get_theme_file_path( "/template-parts/block/block-{$name}.php" ) );
-	}
-}
+add_action('acf/init', 'register_acf_blocks');
